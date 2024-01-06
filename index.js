@@ -143,6 +143,22 @@ function getResult(rollno) {
     return [keysk, values];
 }
 
+function getRank(grade) {
+
+    let rank = 1;
+    for (let i = 1; i < 38; i++) {
+        const tablename = 'Table ' + i;
+        const tabledata = data[tablename];
+        for (let j = 0; j < tabledata.length; j++) {
+            let values = Object.values(tabledata[j]);
+            if (typeof (values[values.length - 2]) == 'number') {
+                if (values[values.length - 2] > grade) rank++;
+            }
+        }
+    }
+    return rank;
+}
+
 // console.log(getResult(rolln));
 
 app.get('/getresult', (req, res) => {
@@ -163,6 +179,12 @@ app.get('/getoverallstats', (req, res) => {
     const branchcode = req.query.branchcode;
     const stats = getOverallStats(branchcode);
     res.status(200).send(stats);
+});
+
+app.get('/getrank', (req, res) => {
+    const grade = req.query.grade;
+    const rank = getRank(grade);
+    res.status(200).send(rank.toString());
 });
 
 app.listen(PORT, (error) => {
