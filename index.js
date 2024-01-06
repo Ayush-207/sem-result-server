@@ -15,7 +15,7 @@ const PORT = 3001;
 // for(let i=7; i<)
 
 var filepath = 'assets/result5sem.xlsx';
-const key = {
+let key = {
     A: 'Sl',
     B: 'Roll No',
     C: "Name\nFather's Name",
@@ -57,6 +57,70 @@ const data = excelToJson({
     header: { rows: 2 },
 });
 
+function getCourseStats(coursecode, branchcode = '') {
+    // console.log([coursecode, branchcode]);
+    let totalstudents = 0;
+    let result = {};
+    for (let i = 1; i < 38; i++) {
+        const tablename = 'Table ' + i;
+        const tabledata = data[tablename];
+        for (let j = 0; j < tabledata.length; j++) {
+            let values = Object.values(tabledata[j]);
+
+            if (branchcode == '' || tabledata[j].B && tabledata[j].B.includes(branchcode.toUpperCase()) || tabledata[j].C && tabledata[j].C.includes(branchcode.toUpperCase())) {
+                if (values.indexOf(coursecode.toUpperCase() + " 4") > -1) {
+                    for (let k = values.indexOf(coursecode.toUpperCase() + " 4"); k < values.length; k++) {
+                        if (typeof (values[k]) == 'number') {
+                            if (result[values[k]])
+                                result[values[k]]++;
+                            else result[values[k]] = 1;
+                            totalstudents++;
+                            break;
+                        }
+                    }
+                }
+
+            }
+        }
+    }
+
+    // console.log(result);
+    // console.log(totalstudents);
+    return [result, totalstudents];
+}
+
+function getOverallStats(branchcode = '') {
+    let totalstudents = 0;
+    let result = {};
+    let keysk = Object.keys(key);
+    for (let i = 1; i < 38; i++) {
+        const tablename = 'Table ' + i;
+        const tabledata = data[tablename];
+        for (let j = 0; j < tabledata.length; j++) {
+            let values = Object.values(tabledata[j]);
+            if (tabledata[j].B && tabledata[j].B.includes("2021" + branchcode.toUpperCase()) || tabledata[j].C && tabledata[j].C.includes("2021" + branchcode.toUpperCase())) {
+                if (typeof (values[values.length - 2]) == 'number') {
+                    if (result[Math.floor(values[values.length - 2])]) result[Math.floor(values[values.length - 2])]++;
+                    else result[Math.floor(values[values.length - 2])] = 1;
+                    totalstudents++;
+                    if (Math.floor(values[values.length - 2]) == 10) {
+                        console.log(tabledata[j]);
+                    }
+                }
+            }
+        }
+    }
+
+    // console.log(result);
+    // console.log(totalstudents);
+    return [result, totalstudents];
+}
+
+// getOverallStats();
+
+// getCourseStats('MEMEC14', 'UME');
+// console.log(data['Table 28'][127]['S'].includes('EONS006'));
+
 function getResult(rollno) {
     let flag = false;
     let result = {};
@@ -81,10 +145,24 @@ function getResult(rollno) {
 
 // console.log(getResult(rolln));
 
-app.get('/getResult', (req, res) => {
+app.get('/getresult', (req, res) => {
     const rolln = req.query.rollno;
     const result = getResult(rolln);
     res.status(200).send(result);
+});
+
+app.get('/getcoursestats', (req, res) => {
+    const coursecode = req.query.coursecode;
+    const branchcode = req.query.branchcode;
+    const stats = getCourseStats(coursecode, branchcode);
+
+    res.status(200).send(stats);
+});
+
+app.get('/getoverallstats', (req, res) => {
+    const branchcode = req.query.branchcode;
+    const stats = getOverallStats(branchcode);
+    res.status(200).send(stats);
 });
 
 app.listen(PORT, (error) => {
