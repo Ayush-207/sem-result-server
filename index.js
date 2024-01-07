@@ -199,7 +199,11 @@ function getRank(grade, branchcode, yoa) {
 // console.log(getRank('9.14', 'UIT', '2023'));
 
 app.get('/getresult', (req, res) => {
-    const rolln = req.query.rollno;
+    let rolln = '';
+    if (req.query.rollno) {
+        rolln = req.query.rollno;
+    }
+    // console.log(rolln);
     const result = getResult(rolln);
     res.status(200).send(result);
 });
@@ -213,25 +217,37 @@ app.get('/result', (req, res) => {
 });
 
 app.get('/getcoursestats', (req, res) => {
-    const coursecode = req.query.coursecode;
-    const branchcode = req.query.branchcode;
-    const yoa = req.query.yoa;
+    let coursecode = '', branchcode = '', yoa = '';
+    if (req.query.coursecode)
+        coursecode = req.query.coursecode;
+    if (req.query.branchcode)
+        branchcode = req.query.branchcode;
+    if (req.query.yoa)
+        yoa = req.query.yoa;
     const stats = getCourseStats(coursecode, branchcode, yoa);
 
     res.status(200).send(stats);
 });
 
 app.get('/getoverallstats', (req, res) => {
-    const branchcode = req.query.branchcode;
-    const yoa = req.query.yoa;
+    let branchcode = '', yoa = '';
+    if (req.query.branchcode)
+        branchcode = req.query.branchcode;
+    if (req.query.yoa)
+        yoa = req.query.yoa;
     const stats = getOverallStats(branchcode, yoa);
     res.status(200).send(stats);
 });
 
 app.get('/getrank', (req, res) => {
-    const grade = req.query.grade;
-    const yoa = req.query.yoa;
-    const branchcode = req.query.branchcode;
+    let grade = '', branchcode = '', yoa = '';
+    if (req.query.grade)
+        grade = req.query.grade;
+    if (req.query.branchcode)
+        branchcode = req.query.branchcode;
+    if (req.query.yoa)
+        yoa = req.query.yoa;
+
     const rank = getRank(grade, branchcode, yoa);
     res.status(200).send(rank.toString());
 });
