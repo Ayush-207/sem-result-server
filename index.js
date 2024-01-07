@@ -172,6 +172,7 @@ function getResult(rollno) {
         }
         if (flag) break;
     }
+    values = Object.values(result);
 
     return [keysk, values];
 }
