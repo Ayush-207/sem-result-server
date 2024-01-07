@@ -150,9 +150,16 @@ function getOverallStats(branchcode = '', yoa) {
 // console.log(data['Table 28'][127]['S'].includes('EONS006'));
 
 function getResult(rollno) {
+    let result = {};
+    let keysk = Object.values(key);
+    let values = Object.values(result);
+
+    if (!rollno) {
+        return [keysk, values];
+    }
     const yoa = rollno.substr(0, 4);
     let flag = false;
-    let result = {};
+
     for (let i = 1; i <= pages['2023' - yoa]; i++) {
         const tablename = "Table " + i;
         const tableData = data['2023' - yoa][tablename];
@@ -165,9 +172,6 @@ function getResult(rollno) {
         }
         if (flag) break;
     }
-
-    let keysk = Object.values(key);
-    let values = Object.values(result);
 
     return [keysk, values];
 }
@@ -197,6 +201,14 @@ app.get('/getresult', (req, res) => {
     const rolln = req.query.rollno;
     const result = getResult(rolln);
     res.status(200).send(result);
+});
+
+app.get('/stats', (req, res) => {
+    res.redirect('/getcoursestats');
+});
+
+app.get('/result', (req, res) => {
+    res.redirect('/getresult');
 });
 
 app.get('/getcoursestats', (req, res) => {
