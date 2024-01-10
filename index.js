@@ -157,11 +157,11 @@ function getOverallStats(branchcode = '', yoa) {
 
 function getResult(rollno) {
     let result = {};
-    let keysk = Object.values(key);
+    // let keysk = Object.values(key);
     let values = Object.values(result);
 
     if (rollno == '') {
-        return [keysk, values];
+        return ['rollno', values];
     }
     const yoa = rollno.substr(0, 4);
     let flag = false;
@@ -179,9 +179,37 @@ function getResult(rollno) {
         if (flag) break;
     }
     values = Object.values(result);
-
-    return [keysk, values];
+    return ['rollno', [values]];
 }
+
+
+function getResultByName(name, yoa) {
+    let result = [];
+    let keysk = Object.values(key);
+    let values = Object.values(result);
+
+    if (name == '' || yoa == '') {
+        return [];
+    }
+    let flag = false;
+
+    for (let i = 1; i <= pages['2023' - yoa]; i++) {
+        const tablename = "Table " + i;
+        const tableData = data['2023' - yoa][tablename];
+        for (let j = 0; j < tableData.length; j++) {
+            let values = Object.values(tableData[j]);
+            for (let k = 0; k < values.length; k++) {
+                if (values[k].toString().toUpperCase().includes(name)) {
+                    result.push(values);
+                    break;
+                }
+            }
+        }
+    }
+    return ['name', result];
+}
+
+// console.log(getResult('2021UIT3137'));
 
 function getRank(grade, branchcode, yoa) {
     if (grade == '' && yoa == '') {
@@ -209,11 +237,19 @@ function getRank(grade, branchcode, yoa) {
 
 app.get('/getresult', (req, res) => {
     let rolln = '';
+    let name = '', yoa = '2021';
+    let result = [];
     if (req.query.rollno) {
         rolln = req.query.rollno;
+        result = getResult(rolln);
+    }
+    else if (req.query.name) {
+        name = req.query.name;
+        yoa = req.query.yoa;
+        result = getResultByName(name, yoa);
     }
     // console.log(rolln);
-    const result = getResult(rolln);
+    // console.log(result);
     res.status(200).send(result);
 });
 
