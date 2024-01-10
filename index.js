@@ -78,6 +78,9 @@ const pages = [49, 49, 37, 36];
 
 function getCourseStats(coursecode, branchcode = '', yoa) {
     // console.log([coursecode, branchcode]);
+    if (coursecode == '' && yoa == '') {
+        return [{}, 0];
+    }
     branchcode = branchcode == '' ? '' : branchcode.toUpperCase();
     let totalstudents = 0;
     let result = {};
@@ -117,6 +120,9 @@ function getCourseStats(coursecode, branchcode = '', yoa) {
 // console.log(getCourseStats('FENM012', 'UIT', '2022'));
 
 function getOverallStats(branchcode = '', yoa) {
+    if (yoa == '') {
+        return [{}, 0];
+    }
     branchcode = branchcode == '' ? '' : branchcode.toUpperCase();
     let totalstudents = 0;
     let result = {};
@@ -154,7 +160,7 @@ function getResult(rollno) {
     let keysk = Object.values(key);
     let values = Object.values(result);
 
-    if (!rollno) {
+    if (rollno == '') {
         return [keysk, values];
     }
     const yoa = rollno.substr(0, 4);
@@ -178,6 +184,9 @@ function getResult(rollno) {
 }
 
 function getRank(grade, branchcode, yoa) {
+    if (grade == '' && yoa == '') {
+        return 'Rank';
+    }
     branchcode = branchcode == '' ? '' : branchcode.toUpperCase();
     let rank = 1;
     for (let i = 1; i <= pages['2023' - yoa]; i++) {
